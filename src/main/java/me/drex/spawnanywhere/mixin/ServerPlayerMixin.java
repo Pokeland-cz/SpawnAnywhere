@@ -43,28 +43,4 @@ public abstract class ServerPlayerMixin extends Player {
             cir.setReturnValue(optional.get().pos());
         }
     }
-
-    @WrapOperation(
-        method = "findRespawnPositionAndUseSpawnBlock",
-        at = {
-            @At(
-                value = "INVOKE",
-                target = "Lnet/minecraft/world/level/portal/DimensionTransition;missingRespawnBlock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/portal/DimensionTransition$PostDimensionTransition;)Lnet/minecraft/world/level/portal/DimensionTransition;"
-            ),
-            @At(
-                value = "NEW",
-                target = "(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/portal/DimensionTransition$PostDimensionTransition;)Lnet/minecraft/world/level/portal/DimensionTransition;",
-                ordinal = 1
-            )
-        }
-    )
-    private DimensionTransition replaceRespawnLocation(ServerLevel serverLevel, Entity entity, DimensionTransition.PostDimensionTransition postDimensionTransition, Operation<DimensionTransition> original) {
-        Optional<Location> optional = SpawnAnywhere.DATA.respawnLocation();
-        Optional<ServerLevel> spawnLocation = optional.map(location -> server.getLevel(location.dimension()));
-        if (spawnLocation.isPresent()) {
-            return optional.get().dimensionTransition(server, postDimensionTransition);
-        } else {
-            return original.call(serverLevel, entity, postDimensionTransition);
-        }
-    }
 }
